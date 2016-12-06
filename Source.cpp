@@ -1,10 +1,12 @@
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_primitives.h>
 #include "objects.h"
+#include <iostream>
 
 //zmienne globalne
 const int WIDTH = 800;
 const int HEIGHT = 400;
+const int NUM_BULLETS = 5;
 enum KEYS{UP,DOWN,LEFT,RIGHT,SPACE};
 bool keys[ 5 ] = { false,false,false,false,false };
 
@@ -16,6 +18,11 @@ void MoveShipDown(SpaceShip &ship);
 void MoveShipLeft(SpaceShip &ship);
 void MoveShipRight(SpaceShip &ship);
 
+void InitBullet(bullet bullet[], int size);
+void DrawBullet(bullet bullet[], int size);
+void FireBullet(bullet bullet[], int size, SpaceShip &ship);
+void UpdateBullet(bullet bullet[], int size);
+
 int main(void)
 {
 	//zmienna pierwotna
@@ -25,6 +32,7 @@ int main(void)
 
 	//zmienne obiektowe
 	SpaceShip ship;
+	bullet bullets[5];
 
 	//zmienne allegro
 	ALLEGRO_DISPLAY *display = NULL;
@@ -47,6 +55,7 @@ int main(void)
 
 
 	InitShip(ship);
+	InitBullet(bullets,NUM_BULLETS);
 
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -68,6 +77,8 @@ int main(void)
 				MoveShipLeft(ship);
 			if (keys[RIGHT])
 				MoveShipRight(ship);
+
+			UpdateBullet(bullets, NUM_BULLETS);
 		}
 		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
 		{
@@ -94,6 +105,7 @@ int main(void)
 				break;
 			case ALLEGRO_KEY_SPACE:
 				keys[SPACE] = true;
+				FireBullet(bullets, NUM_BULLETS, ship);
 				break;
 			}
 		}
@@ -128,13 +140,14 @@ int main(void)
 		{
 			redraw = false;
 			DrawShip(ship);
+			DrawBullet(bullets, NUM_BULLETS);
 
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 		}
 	}
 
-	al_destroy_display(display);						
+	al_destroy_display(display);			
 
 	return 0;
 }
@@ -185,3 +198,47 @@ void MoveShipRight(SpaceShip &ship)
 	if (ship.x > 300)
 		ship.x = 300;
 }
+
+void InitBullet(bullet bullet[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		bullet[i].ID = BULLET;
+		bullet[i].speed = 10;
+		bullet[i].live = false;
+	}
+}
+void DrawBullet(bullet bullet[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (bullet[i].live)
+			al_draw_filled_circle(bullet[i].x, bullet[i].y,2, al_map_rgb(255, 255, 255));
+	}
+}
+void FireBullet(bullet bullet[], int size, SpaceShip &ship)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (!bullet[i].live)
+		{
+			bullet[i].x = ship.x + 17;
+			bullet[i].y = ship.y;
+			bullet[i].live = true;
+			break;
+		}
+	}
+}
+void UpdateBullet(bullet bullet[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (bullet[i].live)
+		{
+			bullet[i].x += bullet[i].speed;
+			if (bullet[i].x > WIDTH)
+				bullet[i].live = false;
+		}
+	}
+}
+

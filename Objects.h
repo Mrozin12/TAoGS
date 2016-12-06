@@ -14,3 +14,13 @@ struct SpaceShip
 	int boundy;
 	int score;
 };
+
+struct bullet
+{
+	int ID;
+	int x;
+	int y;
+	bool live;
+	int speed;
+
+};

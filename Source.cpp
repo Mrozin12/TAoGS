@@ -7,6 +7,7 @@
 const int WIDTH = 800;
 const int HEIGHT = 400;
 const int NUM_BULLETS = 5;
+const int NUM_COMETS = 10;
 enum KEYS{UP,DOWN,LEFT,RIGHT,SPACE};
 bool keys[ 5 ] = { false,false,false,false,false };
 
@@ -23,6 +24,12 @@ void DrawBullet(bullet bullet[], int size);
 void FireBullet(bullet bullet[], int size, SpaceShip &ship);
 void UpdateBullet(bullet bullet[], int size);
 
+
+void InitComet(Comet comets[], int size);
+void DrawComet(Comet comets[], int size);
+void StartComet(Comet comets[], int size);
+void UpdateComet(Comet comets[], int size);
+
 int main(void)
 {
 	//zmienna pierwotna
@@ -32,7 +39,8 @@ int main(void)
 
 	//zmienne obiektowe
 	SpaceShip ship;
-	bullet bullets[5];
+	bullet bullets[NUM_BULLETS];
+	Comet comets[NUM_COMETS];
 
 	//zmienne allegro
 	ALLEGRO_DISPLAY *display = NULL;
@@ -53,9 +61,10 @@ int main(void)
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / FPS);
 
-
+	srand(time(NULL));
 	InitShip(ship);
 	InitBullet(bullets,NUM_BULLETS);
+	InitComet(comets, NUM_COMETS);
 
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -79,6 +88,8 @@ int main(void)
 				MoveShipRight(ship);
 
 			UpdateBullet(bullets, NUM_BULLETS);
+			StartComet(comets, NUM_COMETS);
+			UpdateComet(comets, NUM_COMETS);
 		}
 		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
 		{
@@ -141,6 +152,7 @@ int main(void)
 			redraw = false;
 			DrawShip(ship);
 			DrawBullet(bullets, NUM_BULLETS);
+			DrawComet(comets, NUM_COMETS);
 
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -241,4 +253,55 @@ void UpdateBullet(bullet bullet[], int size)
 		}
 	}
 }
+
+void InitComet(Comet comets[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		comets[i].ID = ENEMY;
+		comets[i].live = false;
+		comets[i].speed = 5;
+		comets[i].boundx = 18;
+		comets[i].boundy = 18;
+	}
+}
+void DrawComet(Comet comets[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (comets[i].live)
+		{
+			al_draw_filled_circle(comets[i].x, comets[i].y, 20, al_map_rgb(255, 0, 0));
+		}
+	}
+}
+void StartComet(Comet comets[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (!comets[i].live)
+		{
+			if (rand() % 500 == 0)
+			{
+				comets[i].live = true;
+				comets[i].x = WIDTH;
+				comets[i].y = 30 + rand()%(HEIGHT-60);
+				break;
+			}
+		}
+	}
+}
+void UpdateComet(Comet comets[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (comets[i].live)
+		{
+			comets[i].x -= comets[i].speed;
+			if (comets[i].x < 0)
+				comets[i].live = false;
+		}
+	}
+}
+
 

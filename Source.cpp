@@ -23,12 +23,14 @@ void InitBullet(bullet bullet[], int size);
 void DrawBullet(bullet bullet[], int size);
 void FireBullet(bullet bullet[], int size, SpaceShip &ship);
 void UpdateBullet(bullet bullet[], int size);
+void CollideBullet(bullet bullet[], int bSize, Comet comets[], int cSize);
 
 
 void InitComet(Comet comets[], int size);
 void DrawComet(Comet comets[], int size);
 void StartComet(Comet comets[], int size);
 void UpdateComet(Comet comets[], int size);
+void CollideComet(Comet comets[], int cSize, SpaceShip &ship);
 
 int main(void)
 {
@@ -90,6 +92,8 @@ int main(void)
 			UpdateBullet(bullets, NUM_BULLETS);
 			StartComet(comets, NUM_COMETS);
 			UpdateComet(comets, NUM_COMETS);
+			CollideBullet(bullets, NUM_BULLETS, comets, NUM_COMETS);
+			CollideComet(comets, NUM_COMETS, ship);
 		}
 		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
 		{
@@ -253,6 +257,29 @@ void UpdateBullet(bullet bullet[], int size)
 		}
 	}
 }
+void CollideBullet(bullet bullet[], int bSize, Comet comets[], int cSize)
+{
+	for (int i = 0; i < bSize; i++)
+	{
+		if (bullet[i].live)
+		{
+			for (int j = 0; j < cSize; j++)
+			{
+				if (comets[j].live)
+				{
+					if (bullet[i].x > (comets[j].x - comets[j].boundx) &&
+						bullet[i].x < (comets[j].x + comets[j].boundx) &&
+						bullet[i].y > (comets[j].y - comets[j].boundy) &&
+						bullet[i].y < (comets[j].y + comets[j].boundy))
+					{
+						bullet[i].live = false;
+						comets[j].live = false;
+					}
+				}
+			}
+		}
+	}
+}
 
 void InitComet(Comet comets[], int size)
 {
@@ -298,10 +325,29 @@ void UpdateComet(Comet comets[], int size)
 		if (comets[i].live)
 		{
 			comets[i].x -= comets[i].speed;
-			if (comets[i].x < 0)
-				comets[i].live = false;
 		}
 	}
 }
-
+void CollideComet(Comet comets[], int cSize, SpaceShip &ship)
+{
+	for (int i = 0; i < cSize; i++)
+	{
+		if (comets[i].live)
+		{
+			if (comets[i].x - comets[i].boundx<ship.x + ship.boundx &&
+				comets[i].x + comets[i].boundx>ship.x - ship.boundx &&
+				comets[i].y - comets[i].boundy<ship.y + ship.boundy &&
+				comets[i].y + comets[i].boundy>ship.y - ship.boundy)
+			{
+				ship.lives--;
+				comets[i].live = false;
+			}
+			else if (comets[i].x < 0)
+			{
+				comets[i].live = false;
+				ship.lives--;
+			}
+		}
+	}
+}
 

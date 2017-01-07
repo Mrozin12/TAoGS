@@ -1,4 +1,5 @@
 #pragma once
+#include<allegro5\allegro_image.h>
 //nazwy obiektów
 enum IDS { PLAYER, BULLET, ENEMY };
 
@@ -35,3 +36,4 @@ struct Comet
 	int boundx;
 	int boundy;
 };
+

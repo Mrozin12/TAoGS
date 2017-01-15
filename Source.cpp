@@ -39,7 +39,7 @@ void CollideComet(Comet comets[], int cSize, SpaceShip &ship);
 
 ALLEGRO_BITMAP* createBitmap(const std::string& fileName,int& imageWidth,int& imageHeight);
 
-//Image createBitmap(const std::string& fileName);
+
 
 
 int main(void)
@@ -84,18 +84,8 @@ int main(void)
 	al_init_ttf_addon();
 	al_init_image_addon();
 	
-
-	/*image = al_load_bitmap("bitmapa1.png");
-	imageWidth = al_get_bitmap_width(image);
-	ImageHeight = al_get_bitmap_height(image);
-
-	image2 = al_load_bitmap("bit2.png");
-	imageWidth = al_get_bitmap_width(image2);
-	ImageHeight = al_get_bitmap_height(image2);*/
-
 	image = createBitmap("bitmapa1.png", imageWidth, ImageHeight);
 	image2 = createBitmap("bit2.png", imageWidth, ImageHeight);
-	image5 = createBitmap("bit5.bmp", imageWidth, ImageHeight);
 	
 	event_queue = al_create_event_queue();
 	event_queue2 = al_create_event_queue();
@@ -112,7 +102,6 @@ int main(void)
 	while (!asdf)
 	{
 		
-		//std::cout << "asdf?\n";
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue2, &ev);
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN)
@@ -120,12 +109,10 @@ int main(void)
 			if (ev.keyboard.keycode == ALLEGRO_KEY_ENTER)
 			{
 				asdf = true;
-				//al_destroy_bitmap(image5);
 				break;
 			}	
 		}
 	}
-	//al_stop_timer(timer2);
 	if (asdf)
 	{
 		InitShip(ship);
@@ -272,18 +259,9 @@ void InitShip(SpaceShip &ship)
 void DrawShip(SpaceShip &ship)
 {
 	ALLEGRO_BITMAP *image3 = NULL;
-	/*image3 = al_load_bitmap("bit3.bmp");
-	imageWidth = al_get_bitmap_width(image3);
-	ImageHeight = al_get_bitmap_height(image3);
-	al_draw_bitmap(image3, ship.x, ship.y- 40, 0);*/
 	image3 = createBitmap("bit3.bmp",imageWidth,ImageHeight);
 	al_draw_bitmap(image3, ship.x, ship.y - 40, 0);
 	al_convert_mask_to_alpha(image3, al_map_rgb(0,0,0));
-	//al_draw_filled_rectangle(ship.x, ship.y - 9, ship.x + 10, ship.y - 7, al_draw_bitmap(image3,10,10,0));
-	//al_draw_filled_rectangle(ship.x, ship.y + 9, ship.x + 10, ship.y + 7, al_map_rgb(255, 0, 0));
-
-	//al_draw_filled_triangle(ship.x - 12, ship.y - 17, ship.x + 12, ship.y, ship.x - 12, ship.y + 17, al_map_rgb(0, 255, 0));
-	//al_draw_filled_rectangle(ship.x - 12, ship.y - 2, ship.x + 15, ship.y + 2, al_map_rgb(0, 0, 255));
 }
 
 void MoveShipUp(SpaceShip &ship)
@@ -399,11 +377,8 @@ void DrawComet(Comet comets[], int size)
 		if (comets[i].live)
 		{
 			ALLEGRO_BITMAP *image4 = NULL;
-			image4 = al_load_bitmap("bit4.jpg");
-		//	imageWidth = al_get_bitmap_width(image4);
-			ImageHeight = al_get_bitmap_height(image4);
-			al_draw_bitmap(image4, comets[i].x, comets[i].y- (ImageHeight/2), 0);
-			//al_draw_filled_circle(comets[i].x, comets[i].y, 20, al_map_rgb(255, 0, 0));
+			image4 = createBitmap("bit4.jpg", imageWidth, ImageHeight);
+			al_draw_bitmap(image4, comets[i].x, comets[i].y - (ImageHeight / 2), 0);
 			al_convert_mask_to_alpha(image4, al_map_rgb(0, 0, 0));
 	}
 	}
